@@ -251,7 +251,7 @@ public class ObjectDataNode : DataNode, IDictionary<string, DataNode>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public struct Enumerator : IEnumerator<KeyValuePair<string, DataNode>>, IEquatable<Enumerator>
+    public struct Enumerator : IEnumerator<KeyValuePair<string, DataNode>>
     {
         private Dictionary<string, int>.Enumerator _indexEnumerator;
         private List<DataNode>.Enumerator _propertyEnumerator;
@@ -279,32 +279,6 @@ public class ObjectDataNode : DataNode, IDictionary<string, DataNode>
         {
             ((IEnumerator)_indexEnumerator).Reset();
             ((IEnumerator)_propertyEnumerator).Reset();
-        }
-
-        public bool Equals(Enumerator other)
-        {
-            return _indexEnumerator.Equals(other._indexEnumerator)
-                   && _propertyEnumerator.Equals(other._propertyEnumerator);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is Enumerator other && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(_indexEnumerator, _propertyEnumerator);
-        }
-
-        public static bool operator ==(Enumerator left, Enumerator right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(Enumerator left, Enumerator right)
-        {
-            return !left.Equals(right);
         }
     }
 }
