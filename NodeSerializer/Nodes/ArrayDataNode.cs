@@ -13,7 +13,7 @@ public class ArrayDataNode : DataNode, ICollection<DataNode>
     public int Count => _values.Count;
     public bool IsReadOnly => false;
 
-    public ArrayDataNode(Type type, string? name, DataNode? parent) : base(type, name, parent)
+    public ArrayDataNode(Type? type, string? name, DataNode? parent) : base(type, name, parent)
     {
         if (!type.IsArray)
             throw new ArgumentException($"{nameof(type)} must be a type of an array.", nameof(type));

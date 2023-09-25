@@ -11,10 +11,10 @@ public enum DataNodeType
 public abstract class DataNode : IEquatable<DataNode>
 {
     private static readonly Dictionary<int, string> IndentCache = new();
-    protected const char IndentChar = ' ';
+    protected const char INDENT_CHAR = ' ';
     public abstract DataNodeType NodeType { get; }
     public DataNode? Parent { get; internal set; }
-    public Type TypeOf { get; }
+    public Type TypeOf { get; private set; }
     public string? Name { get; internal set; }
 
     protected DataNode(Type type, string? name, DataNode? parent)
@@ -43,6 +43,11 @@ public abstract class DataNode : IEquatable<DataNode>
     }
 
     public abstract DataNode Clone();
+
+    public virtual void ChangeType(Type newType)
+    {
+        TypeOf = newType;
+    }
 
     public bool IsNull() => NodeType == DataNodeType.Null;
     
@@ -94,7 +99,7 @@ public abstract class DataNode : IEquatable<DataNode>
     {
         if (IndentCache.TryGetValue(amount, out var indentStr))
             return indentStr + str;
-        indentStr = new string(IndentChar, amount);
+        indentStr = new string(INDENT_CHAR, amount);
         IndentCache.Add(amount, indentStr);
         return indentStr + str;
     }
@@ -103,7 +108,7 @@ public abstract class DataNode : IEquatable<DataNode>
     {
         if (IndentCache.TryGetValue(indent, out var indentStr))
             return indentStr;
-        indentStr = new string(IndentChar, indent);
+        indentStr = new string(INDENT_CHAR, indent);
         IndentCache.Add(indent, indentStr);
         return indentStr;
     }

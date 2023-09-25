@@ -4,28 +4,29 @@ public class ValueDataNode : DataNode
 {
     private object _value;
 
-    public object Value
+    public virtual object Value
     {
         get => _value;
         set
         {
+            ArgumentNullException.ThrowIfNull(value);
             if (value.GetType() != TypeOf)
                 throw new ArgumentException($"Value must be of type {TypeOf}");
             _value = value;
         }
     }
+    
     public override DataNodeType NodeType => DataNodeType.Value;
 
-    public ValueDataNode(object value, string? name, DataNode? parent) : base(value.GetType(), name, parent)
+    public ValueDataNode(object value, string? name, DataNode? parent) : base(value?.GetType() ?? throw new ArgumentNullException(nameof(value)), name, parent)
     {
-        ArgumentNullException.ThrowIfNull(value);
+        if (!value.GetType().IsPrimitive)
+            ArgumentNullException.ThrowIfNull(value);
         var type = _value!.GetType();
         if (!type.IsPrimitive)
             throw new ArgumentException("Value must be a primitive.");
         _value = value;
     }
-
-    public T GetAs<T>() => (T)_value;
     
     public override DataNode Clone()
     {
@@ -43,6 +44,6 @@ public class ValueDataNode : DataNode
 
     public override string ToString(int indent)
     {
-        return new string(IndentChar, indent) + $"Value({Name}: {_value})";
+        return new string(INDENT_CHAR, indent) + $"Value({Name}: {_value})";
     }
 }
