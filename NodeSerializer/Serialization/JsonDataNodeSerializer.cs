@@ -7,7 +7,7 @@ using NodeSerializer.Nodes;
 
 namespace NodeSerializer.Serialization;
 
-public class JsonLoader : IJsonSerializer
+public class JsonDataNodeSerializer : IJsonSerializer
 {
     private static readonly JsonReaderOptions ReaderOptions = new()
     {
@@ -53,13 +53,13 @@ public class JsonLoader : IJsonSerializer
             case JsonTokenType.StartArray:
                 return ParseArrayRecursively(reader, null!);
             default:
-                throw new JsonException($"Unexpected token at {reader.Position} ({reader.TokenType})");
+                return ThrowFormatJsonException<DataNode>(reader);
         }
     }
     
     private static DataNode ParseNumber(Utf8JsonReader reader, string? name)
     {
-        var rawValue = reader.ValueSpan.ToString();
+        var rawValue = ReadSpan(reader.ValueSpan);
         if (rawValue.Length == 0)
             return new NumberValueDataNode(0L, null, null);
         var split = rawValue.Split('.');
@@ -86,7 +86,7 @@ public class JsonLoader : IJsonSerializer
     }
 
     private static DataNode ParseString(Utf8JsonReader reader, string? name) =>
-        new StringDataNode(reader.ValueSpan.ToString(), name, null);
+        new StringDataNode(ReadSpan(reader.ValueSpan), name, null);
 
     private DataNode ParseObjectRecursively(Utf8JsonReader reader, string name)
     {
@@ -97,10 +97,20 @@ public class JsonLoader : IJsonSerializer
             DataNode result;
             switch (reader.TokenType)
             {
+                case JsonTokenType.False:
+                case JsonTokenType.True:
+                case JsonTokenType.Number:
+                case JsonTokenType.Null:
+                case JsonTokenType.String:
+                    if (newName is null)
+                        ThrowFormatJsonException<int>(reader, "Object property declared inside object without a property name");
+                    result = ParseValue(reader, newName);
+                    instance.Add(result);
+                    break;
                 case JsonTokenType.Comment:
                     continue;
                 case JsonTokenType.PropertyName:
-                    newName = reader.ValueSpan.ToString();
+                    newName = ReadSpan(reader.ValueSpan);
                     break;
                 case JsonTokenType.StartObject:
                     if (newName is null)
@@ -131,6 +141,14 @@ public class JsonLoader : IJsonSerializer
             DataNode result;
             switch (reader.TokenType)
             {
+                case JsonTokenType.False:
+                case JsonTokenType.True:
+                case JsonTokenType.Number:
+                case JsonTokenType.Null:
+                case JsonTokenType.String:
+                    result = ParseValue(reader, null!);
+                    instance.Add(result);
+                    break;
                 case JsonTokenType.Comment:
                     continue;
                 case JsonTokenType.PropertyName:
@@ -152,6 +170,25 @@ public class JsonLoader : IJsonSerializer
         return ThrowUnexpectedEndJsonException<DataNode>(reader, "Unexpected end of JSON array");
     }
 
+    private static DataNode ParseValue(Utf8JsonReader reader, string name)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.False:
+                return new BooleanDataNode(false, name, null);
+            case JsonTokenType.True:
+                return new BooleanDataNode(true, name, null);
+            case JsonTokenType.Number:
+                return ParseNumber(reader, name);
+            case JsonTokenType.Null:
+                return new NullDataNode(name, null);
+            case JsonTokenType.String:
+                return ParseString(reader, name);
+            default:
+                throw new NotSupportedException($"{reader.TokenType} cannot be parsed as Values");
+        }
+    }
+
     public byte[] SerializeToBytes(DataNode data)
     {
         using var memoryStream = new MemoryStream(256);
@@ -171,6 +208,8 @@ public class JsonLoader : IJsonSerializer
         writer.Flush();
         return memoryStream.ToArray();
     }
+
+    private static string ReadSpan(ReadOnlySpan<byte> span) => Encoding.UTF8.GetString(span);
 
     public string Serialize(DataNode data) => Encoding.UTF8.GetString(SerializeToBytes(data));
 
@@ -278,7 +317,7 @@ public class JsonLoader : IJsonSerializer
 
     [DoesNotReturn]
     private T ThrowFormatJsonException<T>(Utf8JsonReader reader, string? explanation = null) =>
-        throw new JsonException($"Unexpected token of type <{reader.TokenType}> at {reader.Position}"
+        throw new JsonException($"Unexpected token of type <{reader.TokenType}> at position:{reader.Position.GetInteger()}"
                                 + (explanation is null ? string.Empty : $" ({explanation})"));
     
     [DoesNotReturn]

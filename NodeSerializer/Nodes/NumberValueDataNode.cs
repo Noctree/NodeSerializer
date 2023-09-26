@@ -47,6 +47,51 @@ public struct NumericUnion : IFormattable
         NumberRange.BigDecimal => DoubleValue,
         _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
     };
+    
+    public int AsInt() => Range switch
+    {
+        NumberRange.PositiveInteger => (int)ULongValue,
+        NumberRange.NegativeInteger => (int)LongValue,
+        NumberRange.SmallDecimal => (int)DecimalValue,
+        NumberRange.BigDecimal => (int)DoubleValue,
+        _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
+    };
+    
+    public long AsLong() => Range switch
+    {
+        NumberRange.PositiveInteger => (long)ULongValue,
+        NumberRange.NegativeInteger => LongValue,
+        NumberRange.SmallDecimal => (long)DecimalValue,
+        NumberRange.BigDecimal => (long)DoubleValue,
+        _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
+    };
+    
+    public ulong AsULong() => Range switch
+    {
+        NumberRange.PositiveInteger => ULongValue,
+        NumberRange.NegativeInteger => (ulong)LongValue,
+        NumberRange.SmallDecimal => (ulong)DecimalValue,
+        NumberRange.BigDecimal => (ulong)DoubleValue,
+        _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
+    };
+    
+    public decimal AsDecimal() => Range switch
+    {
+        NumberRange.PositiveInteger => ULongValue,
+        NumberRange.NegativeInteger => LongValue,
+        NumberRange.SmallDecimal => DecimalValue,
+        NumberRange.BigDecimal => (decimal)DoubleValue,
+        _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
+    };
+
+    public double AsDouble() => Range switch
+    {
+        NumberRange.PositiveInteger => ULongValue,
+        NumberRange.NegativeInteger => LongValue,
+        NumberRange.SmallDecimal => (double)DecimalValue,
+        NumberRange.BigDecimal => DoubleValue,
+        _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
+    };
 
     public override string ToString() => ToString(null, CultureInfo.InvariantCulture);
 

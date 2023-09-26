@@ -52,6 +52,9 @@ public abstract class DataNode : IEquatable<DataNode>
     public bool IsNull() => NodeType == DataNodeType.Null;
     
     public ValueDataNode AsValue() => this as ValueDataNode ?? throw new InvalidOperationException("This node is not a value.");
+    public NumberValueDataNode AsNumber() => this as NumberValueDataNode ?? throw new InvalidOperationException("This node is not a number.");
+    public StringDataNode AsString() => this as StringDataNode ?? throw new InvalidOperationException("This node is not a string.");
+    public BooleanDataNode AsBoolean() => this as BooleanDataNode ?? throw new InvalidOperationException("This node is not a boolean.");
     public ArrayDataNode AsArray() => this as ArrayDataNode ?? throw new InvalidOperationException("This node is not an array.");
     public ObjectDataNode AsObject() => this as ObjectDataNode ?? throw new InvalidOperationException("This node is not an object.");
 

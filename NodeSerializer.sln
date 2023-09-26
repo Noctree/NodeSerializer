@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeSerializer.Tests", "NodeSerializer.Tests\NodeSerializer.Tests.csproj", "{E6D61259-2F51-472B-8F77-589C7E539679}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,5 +19,9 @@ Global
 		{999767A3-0002-47C3-80F5-D3F8D9DBBDF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{999767A3-0002-47C3-80F5-D3F8D9DBBDF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{999767A3-0002-47C3-80F5-D3F8D9DBBDF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6D61259-2F51-472B-8F77-589C7E539679}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6D61259-2F51-472B-8F77-589C7E539679}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6D61259-2F51-472B-8F77-589C7E539679}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6D61259-2F51-472B-8F77-589C7E539679}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

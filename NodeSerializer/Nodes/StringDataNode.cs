@@ -22,4 +22,6 @@ public readonly struct StringStruct : IFormattable
     {
         return Value;
     }
+    
+    public string AsString() => Value;
 }

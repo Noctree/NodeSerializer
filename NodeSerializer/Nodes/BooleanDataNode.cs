@@ -21,6 +21,8 @@ public class BooleanDataNode : TypedValueDataNode<BooleanDataNode.FormattableBoo
         }
     
         public string ToString(string? format, IFormatProvider? formatProvider) => Value ? TRUE_STRING : FALSE_STRING;
+
+        public bool AsBool() => Value;
         
         public static implicit operator FormattableBoolean(bool value) => new(value);
         public static implicit operator bool(FormattableBoolean value) => value.Value;

@@ -22,7 +22,7 @@ public class ValueDataNode : DataNode
     {
         if (!value.GetType().IsPrimitive)
             ArgumentNullException.ThrowIfNull(value);
-        var type = _value!.GetType();
+        var type = value!.GetType();
         if (!type.IsPrimitive)
             throw new ArgumentException("Value must be a primitive.");
         _value = value;
