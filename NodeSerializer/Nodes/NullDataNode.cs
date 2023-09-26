@@ -4,7 +4,7 @@ public class NullDataNode : DataNode
 {
     public override DataNodeType NodeType => DataNodeType.Null;
     
-    public NullDataNode(string? name, DataNode? parent) : base(typeof(void), name, parent)
+    public NullDataNode(string? name, DataNode? parent) : base(null, name, parent)
     {
     }
 

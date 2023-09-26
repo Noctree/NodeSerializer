@@ -7,7 +7,7 @@ namespace NodeSerializer.Nodes;
 public class ArrayDataNode : DataNode, ICollection<DataNode>
 {
     private readonly List<DataNode> _values = new();
-    public Type ValueType { get; private set; }
+    public Type? ValueType { get; private set; }
     public bool AreValuesNullable { get; private set; }
     public override DataNodeType NodeType => DataNodeType.Array;
     public int Count => _values.Count;
@@ -15,16 +15,16 @@ public class ArrayDataNode : DataNode, ICollection<DataNode>
 
     public ArrayDataNode(Type? type, string? name, DataNode? parent) : base(type, name, parent)
     {
-        if (!type.IsArray)
+        if (type is not null && !type.IsArray)
             throw new ArgumentException($"{nameof(type)} must be a type of an array.", nameof(type));
-        ValueType = type.GetElementType()!;
-        AreValuesNullable = ValueType.CanBeNull();
+        ValueType = type?.GetElementType()!;
+        AreValuesNullable = ValueType?.CanBeNull() ?? true;
     }
 
     public void Add(DataNode node)
     {
         ArgumentNullException.ThrowIfNull(node);
-        if (!node.TypeOf.IsAssignableTo(ValueType))
+        if (node.TypeOf?.IsAssignableTo(ValueType) == false)
         {
             throw new ArgumentException($"Value must be assignable to {ValueType}", nameof(node));
         }

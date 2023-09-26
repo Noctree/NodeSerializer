@@ -14,10 +14,10 @@ public abstract class DataNode : IEquatable<DataNode>
     protected const char INDENT_CHAR = ' ';
     public abstract DataNodeType NodeType { get; }
     public DataNode? Parent { get; internal set; }
-    public Type TypeOf { get; private set; }
+    public Type? TypeOf { get; private set; }
     public string? Name { get; internal set; }
 
-    protected DataNode(Type type, string? name, DataNode? parent)
+    protected DataNode(Type? type, string? name, DataNode? parent)
     {
         IsValidParent(parent);
         if (name?.Length == 0)

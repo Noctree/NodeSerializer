@@ -46,4 +46,9 @@ public class ValueDataNode : DataNode
     {
         return new string(INDENT_CHAR, indent) + $"Value({Name}: {_value})";
     }
+
+    public virtual string? SerializeToString()
+    {
+        return Value.ToString();
+    }
 }

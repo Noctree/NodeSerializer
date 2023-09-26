@@ -14,8 +14,15 @@ public class ObjectDataNode : DataNode, IDictionary<string, DataNode>
     public ICollection<string> Keys => _propertyIndices.Keys;
     public ICollection<DataNode> Values => _properties;
     public override DataNodeType NodeType => DataNodeType.Object;
-    public ObjectDataNode(Type type, string? name, DataNode? parent) : base(type, name, parent)
+    public ObjectDataNode(Type? type, string? name, DataNode? parent) : base(type, name, parent)
     {
+    }
+
+    public override void ChangeType(Type newType)
+    {
+        if (newType.IsPrimitive)
+            throw new NotSupportedException("Object cannot be a primitive type");
+        base.ChangeType(newType);
     }
 
     public void Add(DataNode property)

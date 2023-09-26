@@ -7,7 +7,7 @@ public class StringDataNode : TypedValueDataNode<StringStruct>
     }
 }
 
-public readonly struct StringStruct
+public readonly struct StringStruct : IFormattable
 {
     public readonly string Value;
 
@@ -18,4 +18,8 @@ public readonly struct StringStruct
     
     public static implicit operator string(StringStruct value) => value.Value;
     public static implicit operator StringStruct(string value) => new(value);
+    public string ToString(string? format, IFormatProvider? formatProvider)
+    {
+        return Value;
+    }
 }

@@ -2,7 +2,7 @@
 
 namespace NodeSerializer.Serialization;
 
-public interface ISerializedLoader
+public interface ISerializer
 {
     public DataNode Deserialize(string raw);
     public string Serialize(DataNode data);
