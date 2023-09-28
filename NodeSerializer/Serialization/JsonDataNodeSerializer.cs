@@ -43,21 +43,21 @@ public class JsonDataNodeSerializer : IJsonSerializer
             case JsonTokenType.True:
                 return new BooleanDataNode(true, null, null);
             case JsonTokenType.Number:
-                return ParseNumber(reader, null);
+                return ParseNumber(ref reader, null);
             case JsonTokenType.Null:
                 return new NullDataNode(null, null);
             case JsonTokenType.String:
                 return ParseString(reader, null);
             case JsonTokenType.StartObject:
-                return ParseObjectRecursively(reader, null!);
+                return ParseObjectRecursively(ref reader, null!);
             case JsonTokenType.StartArray:
-                return ParseArrayRecursively(reader, null!);
+                return ParseArrayRecursively(ref reader, null!);
             default:
                 return ThrowFormatJsonException<DataNode>(reader);
         }
     }
     
-    private static DataNode ParseNumber(Utf8JsonReader reader, string? name)
+    private static DataNode ParseNumber(ref Utf8JsonReader reader, string? name)
     {
         var rawValue = ReadSpan(reader.ValueSpan);
         if (rawValue.Length == 0)
@@ -88,7 +88,7 @@ public class JsonDataNodeSerializer : IJsonSerializer
     private static DataNode ParseString(Utf8JsonReader reader, string? name) =>
         new StringDataNode(ReadSpan(reader.ValueSpan), name, null);
 
-    private DataNode ParseObjectRecursively(Utf8JsonReader reader, string name)
+    private DataNode ParseObjectRecursively(ref Utf8JsonReader reader, string name)
     {
         var instance = new ObjectDataNode(typeof(object), name, null);
         var newName = (string)null;
@@ -115,13 +115,13 @@ public class JsonDataNodeSerializer : IJsonSerializer
                 case JsonTokenType.StartObject:
                     if (newName is null)
                         ThrowFormatJsonException<int>(reader, "Object property declared inside object without a property name");
-                    result = ParseObjectRecursively(reader, newName);
+                    result = ParseObjectRecursively(ref reader, newName);
                     instance.Add(result);
                     break;
                 case JsonTokenType.StartArray:
                     if (newName is null)
                         ThrowFormatJsonException<int>(reader, "Array property declared inside object without a property name");
-                    result = ParseArrayRecursively(reader, newName);
+                    result = ParseArrayRecursively(ref reader, newName);
                     instance.Add(result);
                     break;
                 case JsonTokenType.EndObject:
@@ -133,7 +133,7 @@ public class JsonDataNodeSerializer : IJsonSerializer
         return ThrowUnexpectedEndJsonException<DataNode>(reader, "Unexpected end of JSON object");
     }
 
-    private DataNode ParseArrayRecursively(Utf8JsonReader reader, string name)
+    private DataNode ParseArrayRecursively(ref Utf8JsonReader reader, string name)
     {
         var instance = new ArrayDataNode(null, name, null);
         while (reader.Read())
@@ -154,11 +154,11 @@ public class JsonDataNodeSerializer : IJsonSerializer
                 case JsonTokenType.PropertyName:
                     return ThrowFormatJsonException<DataNode>(reader, "Arrays cannot contain property names");
                 case JsonTokenType.StartArray:
-                    result = ParseArrayRecursively(reader, name);
+                    result = ParseArrayRecursively(ref reader, name);
                     instance.Add(result);
                     break;
                 case JsonTokenType.StartObject:
-                    result = ParseObjectRecursively(reader, name);
+                    result = ParseObjectRecursively(ref reader, name);
                     instance.Add(result);
                     break;
                 case JsonTokenType.EndArray:
@@ -179,7 +179,7 @@ public class JsonDataNodeSerializer : IJsonSerializer
             case JsonTokenType.True:
                 return new BooleanDataNode(true, name, null);
             case JsonTokenType.Number:
-                return ParseNumber(reader, name);
+                return ParseNumber(ref reader, name);
             case JsonTokenType.Null:
                 return new NullDataNode(name, null);
             case JsonTokenType.String:

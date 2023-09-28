@@ -10,7 +10,7 @@ public enum DataNodeType
 
 public abstract class DataNode : IEquatable<DataNode>
 {
-    private static readonly Dictionary<int, string> IndentCache = new();
+    private static readonly Dictionary<byte, string> IndentCache = new();
     protected const char INDENT_CHAR = ' ';
     public abstract DataNodeType NodeType { get; }
     public DataNode? Parent { get; internal set; }
@@ -76,7 +76,14 @@ public abstract class DataNode : IEquatable<DataNode>
         return Equals((DataNode)obj);
     }
 
-    public abstract string ToString(int indent);
+    public string ToString(int indent)
+    {
+        if (indent is < 0 or > byte.MaxValue)
+            throw new ArgumentOutOfRangeException(nameof(indent));
+        return ToString((byte)indent);
+    }
+
+    protected abstract string ToString(byte indent);
 
     public override string ToString()
     {
@@ -98,17 +105,16 @@ public abstract class DataNode : IEquatable<DataNode>
         return !Equals(left, right);
     }
 
-    protected static string Indent(string str, int amount)
+    protected static string Indent(string str, byte amount)
     {
-        if (IndentCache.TryGetValue(amount, out var indentStr))
-            return indentStr + str;
-        indentStr = new string(INDENT_CHAR, amount);
-        IndentCache.Add(amount, indentStr);
+        var indentStr = GetIndent(amount);
         return indentStr + str;
     }
 
-    protected static string GetIndent(int indent)
+    protected static string GetIndent(byte indent)
     {
+        if (indent == 0)
+            return string.Empty;
         if (IndentCache.TryGetValue(indent, out var indentStr))
             return indentStr;
         indentStr = new string(INDENT_CHAR, indent);

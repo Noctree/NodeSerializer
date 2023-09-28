@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace NodeSerializer.Nodes;
 
-public class TypedValueDataNode<T> : ValueDataNode where T : struct, IFormattable
+public class TypedValueDataNode<T> : ValueDataNode where T : struct
 {
     public override object Value
     {
@@ -15,13 +15,25 @@ public class TypedValueDataNode<T> : ValueDataNode where T : struct, IFormattabl
 
     public T TypedValue { get; set; }
 
-    public TypedValueDataNode(T value, string? name, DataNode? parent) : base(Utils.SHARED_DUMMY_OBJECT_VALUE, name, parent)
+    public TypedValueDataNode(T value, Type type, string? name, DataNode? parent) : base(Utils.SHARED_DUMMY_OBJECT_VALUE, type, name, parent)
     {
         TypedValue = value;
     }
 
     public override string? SerializeToString()
     {
-        return TypedValue.ToString(null, CultureInfo.InvariantCulture);
+        if (TypedValue is IFormattable formattable)
+        {
+            return formattable.ToString(null, CultureInfo.InvariantCulture);
+        }
+        else
+        {
+            return TypedValue.ToString();
+        }
+    }
+
+    protected override string ToString(byte indent)
+    {
+        return Indent($"Value({Name}: {TypedValue})", indent);
     }
 }

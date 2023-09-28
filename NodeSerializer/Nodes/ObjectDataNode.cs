@@ -232,19 +232,22 @@ public class ObjectDataNode : DataNode, IDictionary<string, DataNode>
             throw new InvalidOperationException($"A property with the name {name} already exists.");
     }
 
-    public override string ToString(int indent)
+    protected override string ToString(byte indent)
     {
+        const byte PropertiesOffset = 2;
+        
         var sb = new StringBuilder();
         var tab = GetIndent(indent);
         sb.Append(tab + "Object(");
         sb.Append(Name);
         sb.Append(", {\n");
+        tab = GetIndent((byte)(indent + 1));
         foreach (var property in _properties)
         {
             sb.Append(tab);
             sb.Append(property.Name);
             sb.Append(":\n");
-            sb.Append(property.ToString(indent + 1));
+            sb.Append(property.ToString(indent + PropertiesOffset));
             sb.Append(",\n");
         }
         sb.Append(tab + "})");

@@ -2,8 +2,13 @@
 
 public class StringDataNode : TypedValueDataNode<StringStruct>
 {
-    public StringDataNode(string value, string? name, DataNode? parent) : base(value, name, parent)
+    public StringDataNode(string value, string? name, DataNode? parent) : base(value, typeof(string), name, parent)
     {
+    }
+
+    protected override string ToString(byte indent)
+    {
+        return Indent($"String({Name}: {TypedValue})", indent);
     }
 }
 

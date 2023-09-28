@@ -21,10 +21,29 @@ public class ArrayDataNode : DataNode, ICollection<DataNode>
         AreValuesNullable = ValueType?.CanBeNull() ?? true;
     }
 
+    public DataNode this[int index]
+    {
+        get => _values[index];
+        set
+        {
+            CheckNode(value);
+            _values[index] = value;
+        }
+    }
+
     public void Add(DataNode node)
     {
         ArgumentNullException.ThrowIfNull(node);
-        if (node.TypeOf?.IsAssignableTo(ValueType) == false)
+        CheckNode(node);
+
+        node.Name = null;
+        node.Parent = this;
+        _values.Add(node);
+    }
+
+    private void CheckNode(DataNode node)
+    {
+        if (ValueType is not null && node.TypeOf?.IsAssignableTo(ValueType) == false)
         {
             throw new ArgumentException($"Value must be assignable to {ValueType}", nameof(node));
         }
@@ -33,10 +52,6 @@ public class ArrayDataNode : DataNode, ICollection<DataNode>
         {
             throw new ArgumentException($"Null values are not allowed.", nameof(node));
         }
-
-        node.Name = null;
-        node.Parent = this;
-        _values.Add(node);
     }
 
     public void Clear()
@@ -110,7 +125,7 @@ public class ArrayDataNode : DataNode, ICollection<DataNode>
         return true;
     }
 
-    public override string ToString(int indent)
+    protected override string ToString(byte indent)
     {
         var tab = GetIndent(indent);
         var sb = new StringBuilder();

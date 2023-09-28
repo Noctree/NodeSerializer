@@ -5,8 +5,25 @@ namespace NodeSerializer.Nodes;
 
 public class NumberValueDataNode : TypedValueDataNode<NumericUnion>
 {
-    public NumberValueDataNode(NumericUnion value, string? name, DataNode? parent) : base(value, name, parent)
+    public NumberValueDataNode(long value, string? name, DataNode? parent) : base(value, typeof(long), name, parent)
     {
+    }
+    
+    public NumberValueDataNode(ulong value, string? name, DataNode? parent) : base(value, typeof(ulong), name, parent)
+    {
+    }
+    
+    public NumberValueDataNode(decimal value, string? name, DataNode? parent) : base(value, typeof(decimal), name, parent)
+    {
+    }
+    
+    public NumberValueDataNode(double value, string? name, DataNode? parent) : base(value, typeof(double), name, parent)
+    {
+    }
+
+    protected override string ToString(byte indent)
+    {
+        return Indent($"{TypeOf?.Name ?? "Number"}({Name}: {TypedValue})", indent);
     }
 }
 
@@ -48,7 +65,7 @@ public struct NumericUnion : IFormattable
         _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
     };
     
-    public int AsInt() => Range switch
+    public readonly int AsInt() => Range switch
     {
         NumberRange.PositiveInteger => (int)ULongValue,
         NumberRange.NegativeInteger => (int)LongValue,
@@ -57,7 +74,7 @@ public struct NumericUnion : IFormattable
         _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
     };
     
-    public long AsLong() => Range switch
+    public readonly long AsLong() => Range switch
     {
         NumberRange.PositiveInteger => (long)ULongValue,
         NumberRange.NegativeInteger => LongValue,
@@ -66,7 +83,7 @@ public struct NumericUnion : IFormattable
         _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
     };
     
-    public ulong AsULong() => Range switch
+    public readonly ulong AsULong() => Range switch
     {
         NumberRange.PositiveInteger => ULongValue,
         NumberRange.NegativeInteger => (ulong)LongValue,
@@ -75,7 +92,7 @@ public struct NumericUnion : IFormattable
         _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
     };
     
-    public decimal AsDecimal() => Range switch
+    public readonly decimal AsDecimal() => Range switch
     {
         NumberRange.PositiveInteger => ULongValue,
         NumberRange.NegativeInteger => LongValue,
@@ -84,7 +101,7 @@ public struct NumericUnion : IFormattable
         _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
     };
 
-    public double AsDouble() => Range switch
+    public readonly double AsDouble() => Range switch
     {
         NumberRange.PositiveInteger => ULongValue,
         NumberRange.NegativeInteger => LongValue,

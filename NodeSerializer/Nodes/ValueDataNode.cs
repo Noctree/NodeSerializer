@@ -18,19 +18,18 @@ public class ValueDataNode : DataNode
     
     public override DataNodeType NodeType => DataNodeType.Value;
 
-    public ValueDataNode(object value, string? name, DataNode? parent) : base(value?.GetType() ?? throw new ArgumentNullException(nameof(value)), name, parent)
+    public ValueDataNode(object value, Type type, string? name, DataNode? parent) : base(type, name, parent)
     {
         if (!value.GetType().IsPrimitive)
             ArgumentNullException.ThrowIfNull(value);
-        var type = value!.GetType();
-        if (!type.IsPrimitive)
-            throw new ArgumentException("Value must be a primitive.");
+        if (!type.IsPrimitive && type != typeof(string) && type != typeof(decimal))
+            throw new ArgumentException("Value must be a primitive or string or decimal.");
         _value = value;
     }
     
     public override DataNode Clone()
     {
-        return new ValueDataNode(_value, Name, null);
+        return new ValueDataNode(_value, TypeOf!, Name, null);
     }
 
     public override bool Equals(DataNode? other)
@@ -42,9 +41,9 @@ public class ValueDataNode : DataNode
         return base.Equals(other);
     }
 
-    public override string ToString(int indent)
+    protected override string ToString(byte indent)
     {
-        return new string(INDENT_CHAR, indent) + $"Value({Name}: {_value})";
+        return Indent($"Value({Name}: {Value})", indent);
     }
 
     public virtual string? SerializeToString()

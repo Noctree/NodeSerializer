@@ -13,7 +13,7 @@ public class NullDataNode : DataNode
         return new NullDataNode(Name, null);
     }
 
-    public override string ToString(int indent)
+    protected override string ToString(byte indent)
     {
         return Indent("null", indent);
     }
