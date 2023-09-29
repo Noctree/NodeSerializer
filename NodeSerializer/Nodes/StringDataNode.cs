@@ -12,7 +12,7 @@ public class StringDataNode : TypedValueDataNode<StringStruct>
     }
 }
 
-public readonly struct StringStruct : IFormattable
+public readonly struct StringStruct : IFormattable, IComparable<string>, IComparable<StringStruct>
 {
     public readonly string Value;
 
@@ -29,4 +29,13 @@ public readonly struct StringStruct : IFormattable
     }
     
     public string AsString() => Value;
+    public int CompareTo(string? other)
+    {
+        return string.Compare(Value, other, StringComparison.Ordinal);
+    }
+
+    public int CompareTo(StringStruct other)
+    {
+        return string.Compare(Value, other.Value, StringComparison.Ordinal);
+    }
 }

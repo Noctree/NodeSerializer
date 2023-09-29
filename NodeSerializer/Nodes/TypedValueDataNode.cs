@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace NodeSerializer.Nodes;
 
-public class TypedValueDataNode<T> : ValueDataNode where T : struct
+public class TypedValueDataNode<T> : ValueDataNode where T : struct, IComparable<T>
 {
     public override object Value
     {
@@ -18,6 +18,15 @@ public class TypedValueDataNode<T> : ValueDataNode where T : struct
     public TypedValueDataNode(T value, Type type, string? name, DataNode? parent) : base(Utils.SHARED_DUMMY_OBJECT_VALUE, type, name, parent)
     {
         TypedValue = value;
+    }
+
+    public override bool Equals(DataNode? other)
+    {
+        if (other is TypedValueDataNode<T> otherValue)
+        {
+            return Comparer<T>.Default.Compare(TypedValue, otherValue.TypedValue) == 0;
+        }
+        return base.Equals(other);
     }
 
     public override string? SerializeToString()

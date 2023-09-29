@@ -5,6 +5,10 @@ namespace NodeSerializer.Nodes;
 
 public class NumberValueDataNode : TypedValueDataNode<NumericUnion>
 {
+    public NumberValueDataNode(int value, string? name, DataNode? parent) : base(value, typeof(long), name, parent)
+    {
+    }
+    
     public NumberValueDataNode(long value, string? name, DataNode? parent) : base(value, typeof(long), name, parent)
     {
     }
@@ -31,7 +35,7 @@ public class NumberValueDataNode : TypedValueDataNode<NumericUnion>
 /// A union of different numeric types, for internal use only
 /// </summary>
 [StructLayout(LayoutKind.Explicit)]
-public struct NumericUnion : IFormattable
+public struct NumericUnion : IFormattable, IComparable<NumericUnion>
 {
     public enum NumberRange : byte
     {
@@ -109,7 +113,6 @@ public struct NumericUnion : IFormattable
         NumberRange.BigDecimal => DoubleValue,
         _ => throw new ArgumentOutOfRangeException($"Range {Range} is not supported")
     };
-
     public override string ToString() => ToString(null, CultureInfo.InvariantCulture);
 
     public string ToString(string? format, IFormatProvider? formatProvider) => Range switch
@@ -120,22 +123,55 @@ public struct NumericUnion : IFormattable
         NumberRange.BigDecimal => DoubleValue.ToString(format, formatProvider),
         _ => nameof(NumberValueDataNode)
     };
+    
+    public int CompareTo(NumericUnion other)
+    {
+        if (Range == NumberRange.BigDecimal || other.Range == NumberRange.BigDecimal)
+        {
+            // If either is a double, compare as doubles
+            return AsDouble().CompareTo(other.AsDouble());
+        }
+
+        // For all other cases, compare as decimals for more precision
+        return AsDecimal().CompareTo(other.AsDecimal());
+    }
+
+    public int CompareTo(long other)
+    {
+        return Range == NumberRange.BigDecimal
+            ? AsDouble().CompareTo((double)other)
+            : AsDecimal().CompareTo(other);
+    }
+
+    public int CompareTo(ulong other)
+    {
+        return Range == NumberRange.BigDecimal
+            ? AsDouble().CompareTo((double)other)
+            : AsDecimal().CompareTo(other);
+    }
+
+    public int CompareTo(decimal other)
+    {
+        return Range == NumberRange.BigDecimal
+            ? AsDouble().CompareTo((double)other)
+            : AsDecimal().CompareTo(other);
+    }
+
+    public int CompareTo(double other)
+    {
+        return AsDouble().CompareTo(other);
+    }
 
     public static implicit operator NumericUnion(long value) => Create(value);
     public static implicit operator NumericUnion(ulong value) => Create(value);
     public static implicit operator NumericUnion(decimal value) => Create(value);
     public static implicit operator NumericUnion(double value) => Create(value);
-    
-    public static implicit operator long(NumericUnion value) => value.Range == NumberRange.NegativeInteger
-        ? value.LongValue
-        : (long)value.ToObject();
-    public static implicit operator ulong(NumericUnion value) => value.Range == NumberRange.PositiveInteger
-        ? value.ULongValue
-        : (ulong)value.ToObject();
-    public static implicit operator decimal(NumericUnion value) => value.Range == NumberRange.SmallDecimal
-        ? value.DecimalValue
-        : (decimal)value.ToObject();
-    public static implicit operator double(NumericUnion value) => value.Range == NumberRange.BigDecimal
-        ? value.DoubleValue
-        : (double)value.ToObject();
+    public static implicit operator NumericUnion(int value) => Create(value);
+
+    public static implicit operator int(NumericUnion value) => value.AsInt();
+
+    public static implicit operator long(NumericUnion value) => value.AsLong();
+    public static implicit operator ulong(NumericUnion value) => value.AsULong();
+    public static implicit operator decimal(NumericUnion value) => value.AsDecimal();
+    public static implicit operator double(NumericUnion value) => value.AsDouble();
 }
