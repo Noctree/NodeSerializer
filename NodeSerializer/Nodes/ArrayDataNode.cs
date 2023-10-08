@@ -4,21 +4,21 @@ using NodeSerializer.Extensions;
 
 namespace NodeSerializer.Nodes;
 
-public class ArrayDataNode : DataNode, ICollection<DataNode>
+public partial class ArrayDataNode : DataNode, ICollection<DataNode>
 {
     private readonly List<DataNode> _values = new();
-    public Type? ValueType { get; private set; }
+    public Type? ElementType { get; private set; }
     public bool AreValuesNullable { get; private set; }
     public override DataNodeType NodeType => DataNodeType.Array;
     public int Count => _values.Count;
     public bool IsReadOnly => false;
 
-    public ArrayDataNode(Type? type, string? name, DataNode? parent) : base(type, name, parent)
+    public ArrayDataNode(Type? type, Type? elementType, string? name, DataNode? parent) : base(type, name, parent)
     {
-        if (type is not null && !type.IsArray)
-            throw new ArgumentException($"{nameof(type)} must be a type of an array.", nameof(type));
-        ValueType = type?.GetElementType()!;
-        AreValuesNullable = ValueType?.CanBeNull() ?? true;
+        if (type is not null && !type.IsAssignableTo(typeof(IEnumerable)))
+            throw new ArgumentException($"{nameof(type)} must be an enumerable.", nameof(type));
+        ElementType = elementType;
+        AreValuesNullable = ElementType?.CanBeNull() ?? true;
     }
 
     public DataNode this[int index]
@@ -43,14 +43,14 @@ public class ArrayDataNode : DataNode, ICollection<DataNode>
 
     private void CheckNode(DataNode node)
     {
-        if (ValueType is not null && node.TypeOf?.IsAssignableTo(ValueType) == false)
+        if (ElementType is not null && node.TypeOf?.IsAssignableTo(ElementType) == false)
         {
-            throw new ArgumentException($"Value must be assignable to {ValueType}", nameof(node));
+            throw new ArgumentException($"Value node of type {node.TypeOf} must be assignable to {ElementType}", nameof(node));
         }
 
         if (node is NullDataNode && !AreValuesNullable)
         {
-            throw new ArgumentException($"Null values are not allowed.", nameof(node));
+            throw new ArgumentException($"Null value nodes are not allowed.", nameof(node));
         }
     }
 
@@ -94,7 +94,7 @@ public class ArrayDataNode : DataNode, ICollection<DataNode>
 
     public override DataNode Clone()
     {
-        var clone = new ArrayDataNode(TypeOf, Name, null);
+        var clone = new ArrayDataNode(TypeOf, ElementType, null, null);
         foreach (var node in _values)
         {
             clone.Add(node.Clone());

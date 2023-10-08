@@ -1,14 +1,14 @@
 ﻿namespace NodeSerializer.Nodes;
 
-public class StringDataNode : TypedValueDataNode<StringStruct>
+public partial class StringDataNode : TypedValueDataNode<StringStruct>
 {
-    public StringDataNode(string value, string? name, DataNode? parent) : base(value, typeof(string), name, parent)
+    internal StringDataNode(string value, string? name, DataNode? parent) : base(value, typeof(string), name, parent)
     {
     }
 
-    protected override string ToString(byte indent)
+    public override DataNode Clone()
     {
-        return Indent($"String({Name}: {TypedValue})", indent);
+        return new StringDataNode(TypedValue, null, null);
     }
 }
 

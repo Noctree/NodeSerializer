@@ -1,4 +1,6 @@
-﻿namespace NodeSerializer.Nodes;
+﻿using NodeSerializer.Extensions;
+
+namespace NodeSerializer.Nodes;
 
 public class ValueDataNode : DataNode
 {
@@ -22,14 +24,14 @@ public class ValueDataNode : DataNode
     {
         if (!value.GetType().IsPrimitive)
             ArgumentNullException.ThrowIfNull(value);
-        if (!type.IsPrimitive && type != typeof(string) && type != typeof(decimal))
+        if (!type.IsPrimitiveExtended())
             throw new ArgumentException("Value must be a primitive or string or decimal.");
         _value = value;
     }
     
     public override DataNode Clone()
     {
-        return new ValueDataNode(_value, TypeOf!, Name, null);
+        return new ValueDataNode(_value, TypeOf!, null, null);
     }
 
     public override bool Equals(DataNode? other)

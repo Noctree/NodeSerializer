@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NodeSerializer.Nodes;
 
-public class ObjectDataNode : DataNode, IDictionary<string, DataNode>
+public partial class ObjectDataNode : DataNode, IDictionary<string, DataNode>
 {
     private readonly Dictionary<string, int> _propertyIndices = new();
     private readonly List<DataNode> _properties = new();
@@ -14,9 +14,10 @@ public class ObjectDataNode : DataNode, IDictionary<string, DataNode>
     public ICollection<string> Keys => _propertyIndices.Keys;
     public ICollection<DataNode> Values => _properties;
     public override DataNodeType NodeType => DataNodeType.Object;
-    public ObjectDataNode(Type? type, string? name, DataNode? parent) : base(type, name, parent)
+    internal ObjectDataNode(Type? type, string? name, DataNode? parent) : base(type, name, parent)
     {
     }
+    
 
     public override void ChangeType(Type newType)
     {
@@ -186,7 +187,7 @@ public class ObjectDataNode : DataNode, IDictionary<string, DataNode>
     
     public override DataNode Clone()
     {
-        var clone = new ObjectDataNode(TypeOf, Name, null);
+        var clone = new ObjectDataNode(TypeOf, null, null);
         foreach (var property in _properties)
         {
             clone.AddPropertyInternal(property.Clone());

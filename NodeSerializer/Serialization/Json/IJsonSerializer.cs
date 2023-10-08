@@ -1,9 +1,9 @@
 ﻿using NodeSerializer.Nodes;
 
-namespace NodeSerializer.Serialization;
+namespace NodeSerializer.Serialization.Json;
 
 public interface IJsonSerializer : ISerializer
 {
-    public DataNode DeserializeFromBytes(byte[] raw);
+    public DataNode Deserialize(byte[] raw);
     public byte[] SerializeToBytes(DataNode data);
 }

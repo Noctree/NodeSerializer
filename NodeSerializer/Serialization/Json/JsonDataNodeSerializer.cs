@@ -5,16 +5,18 @@ using System.Text.Json;
 using NodeSerializer.Extensions;
 using NodeSerializer.Nodes;
 
-namespace NodeSerializer.Serialization;
+namespace NodeSerializer.Serialization.Json;
 
 public class JsonDataNodeSerializer : IJsonSerializer
 {
+    public static readonly JsonDataNodeSerializer Instance = new();
+    
     private static readonly JsonReaderOptions ReaderOptions = new()
     {
         AllowTrailingCommas = true
     };
     
-    public DataNode DeserializeFromBytes(byte[] raw)
+    public DataNode Deserialize(byte[] raw)
     {
         var reader = new Utf8JsonReader(raw, ReaderOptions);
         return DeserializeInternal(reader);
@@ -47,11 +49,11 @@ public class JsonDataNodeSerializer : IJsonSerializer
             case JsonTokenType.Null:
                 return new NullDataNode(null, null);
             case JsonTokenType.String:
-                return ParseString(reader, null);
+                return ParseString(ref reader, null);
             case JsonTokenType.StartObject:
-                return ParseObjectRecursively(ref reader, null!);
+                return ParseObjectRecursively(ref reader);
             case JsonTokenType.StartArray:
-                return ParseArrayRecursively(ref reader, null!);
+                return ParseArrayRecursively(ref reader);
             default:
                 return ThrowFormatJsonException<DataNode>(reader);
         }
@@ -59,38 +61,37 @@ public class JsonDataNodeSerializer : IJsonSerializer
     
     private static DataNode ParseNumber(ref Utf8JsonReader reader, string? name)
     {
-        var rawValue = ReadSpan(reader.ValueSpan);
+        var rawValue = reader.ValueSpan;
         if (rawValue.Length == 0)
             return new NumberValueDataNode(0L, null, null);
-        var split = rawValue.Split('.');
+        var split = rawValue.IndexOf((byte)'.');
         var requiresNegative = rawValue[0] == '-';
-        if (split.Length == 1)
+        if (split == -1)
         {
             //We try to use the largest type to prevent any accidental data loss
             //Using signed longs only if the number is negative
             if (requiresNegative)
-                return new NumberValueDataNode(long.Parse(rawValue, CultureInfo.InvariantCulture), name, null);
+                return new NumberValueDataNode(reader.GetInt64(), name, null);
             else
-                return new NumberValueDataNode(
-                    ulong.Parse(rawValue, CultureInfo.InvariantCulture), name, null);
+                return new NumberValueDataNode(reader.GetUInt64(), name, null);
         }
         else
         {
             //Here we use heuristics to guess the most appropriate type for decimal values
             //If the number fits in the decimal range, we use decimal, otherwise double
-            if (Utils.CompareNumbersAsString(split[0], requiresNegative ? Utils.DECIMAL_MIN : Utils.DECIMAL_MAX) <= 0)
-                return new NumberValueDataNode(decimal.Parse(rawValue, CultureInfo.InvariantCulture), name, null);
+            if (Utils.CompareNumbersAsString(rawValue.Slice(0, split), requiresNegative ? Utils.DecimalMin : Utils.DecimalMax) <= 0)
+                return new NumberValueDataNode(reader.GetDecimal(), name, null);
             else
-                return new NumberValueDataNode(double.Parse(rawValue, CultureInfo.InvariantCulture), name, null);
+                return new NumberValueDataNode(reader.GetDouble(), name, null);
         }
     }
 
-    private static DataNode ParseString(Utf8JsonReader reader, string? name) =>
-        new StringDataNode(ReadSpan(reader.ValueSpan), name, null);
+    private static DataNode ParseString(ref Utf8JsonReader reader, string? name) =>
+        new StringDataNode(reader.GetString() ?? string.Empty, name, null);
 
-    private DataNode ParseObjectRecursively(ref Utf8JsonReader reader, string name)
+    private DataNode ParseObjectRecursively(ref Utf8JsonReader reader)
     {
-        var instance = new ObjectDataNode(typeof(object), name, null);
+        var instance = new ObjectDataNode(typeof(object), null, null);
         var newName = (string)null;
         while (reader.Read())
         {
@@ -105,7 +106,7 @@ public class JsonDataNodeSerializer : IJsonSerializer
                     if (newName is null)
                         ThrowFormatJsonException<int>(reader, "Object property declared inside object without a property name");
                     result = ParseValue(reader, newName);
-                    instance.Add(result);
+                    instance.Add(newName, result);
                     break;
                 case JsonTokenType.Comment:
                     continue;
@@ -115,14 +116,14 @@ public class JsonDataNodeSerializer : IJsonSerializer
                 case JsonTokenType.StartObject:
                     if (newName is null)
                         ThrowFormatJsonException<int>(reader, "Object property declared inside object without a property name");
-                    result = ParseObjectRecursively(ref reader, newName);
-                    instance.Add(result);
+                    result = ParseObjectRecursively(ref reader);
+                    instance.Add(newName, result);
                     break;
                 case JsonTokenType.StartArray:
                     if (newName is null)
                         ThrowFormatJsonException<int>(reader, "Array property declared inside object without a property name");
-                    result = ParseArrayRecursively(ref reader, newName);
-                    instance.Add(result);
+                    result = ParseArrayRecursively(ref reader);
+                    instance.Add(newName, result);
                     break;
                 case JsonTokenType.EndObject:
                     return instance;
@@ -133,9 +134,9 @@ public class JsonDataNodeSerializer : IJsonSerializer
         return ThrowUnexpectedEndJsonException<DataNode>(reader, "Unexpected end of JSON object");
     }
 
-    private DataNode ParseArrayRecursively(ref Utf8JsonReader reader, string name)
+    private DataNode ParseArrayRecursively(ref Utf8JsonReader reader)
     {
-        var instance = new ArrayDataNode(null, name, null);
+        var instance = ArrayDataNode.CreateUntypedEmpty();
         while (reader.Read())
         {
             DataNode result;
@@ -154,11 +155,11 @@ public class JsonDataNodeSerializer : IJsonSerializer
                 case JsonTokenType.PropertyName:
                     return ThrowFormatJsonException<DataNode>(reader, "Arrays cannot contain property names");
                 case JsonTokenType.StartArray:
-                    result = ParseArrayRecursively(ref reader, name);
+                    result = ParseArrayRecursively(ref reader);
                     instance.Add(result);
                     break;
                 case JsonTokenType.StartObject:
-                    result = ParseObjectRecursively(ref reader, name);
+                    result = ParseObjectRecursively(ref reader);
                     instance.Add(result);
                     break;
                 case JsonTokenType.EndArray:
@@ -183,7 +184,7 @@ public class JsonDataNodeSerializer : IJsonSerializer
             case JsonTokenType.Null:
                 return new NullDataNode(name, null);
             case JsonTokenType.String:
-                return ParseString(reader, name);
+                return ParseString(ref reader, name);
             default:
                 throw new NotSupportedException($"{reader.TokenType} cannot be parsed as Values");
         }

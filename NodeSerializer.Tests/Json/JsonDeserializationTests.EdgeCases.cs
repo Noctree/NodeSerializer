@@ -2,14 +2,14 @@
 using System.Text.Json;
 using FluentAssertions;
 using NodeSerializer.Nodes;
-using NodeSerializer.Serialization;
+using NodeSerializer.Serialization.Json;
 using Xunit;
 
 namespace NodeSerializer.Tests;
 
 public class JsonDeserializationTestsEdgeCases
 {
-    private JsonDataNodeSerializer _serializer = new JsonDataNodeSerializer();
+    private readonly JsonDataNodeSerializer _serializer = new();
 
     [Fact]
     public void NullValues_Deserialization_ShouldBeOfTypeNullDataNode()
@@ -130,8 +130,8 @@ public class JsonDeserializationTestsEdgeCases
         objData["IntList"].Should().BeOfType<NullDataNode>();
         objData["StringDict"].Should().BeOfType<ArrayDataNode>();
         objData["StringDict"].AsArray().Should().ContainInConsecutiveOrder(
-            new NumberValueDataNode(1, null, null),
-            new NumberValueDataNode(2, null, null));
+            NumberValueDataNode.Create(1),
+            NumberValueDataNode.Create(2));
     }
 
     [Fact]

@@ -1,7 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NodeSerializer.Nodes;
-using NodeSerializer.Serialization;
+using NodeSerializer.Serialization.Json;
 
 namespace NodeSerializer.Tests;
 

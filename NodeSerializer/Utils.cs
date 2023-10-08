@@ -4,10 +4,10 @@ namespace NodeSerializer;
 
 public static class Utils
 {
-    internal static readonly object SHARED_DUMMY_OBJECT_VALUE = (object)0;
-    internal static readonly string DECIMAL_MAX = decimal.MaxValue.ToString(CultureInfo.InvariantCulture);
-    internal static readonly string DECIMAL_MIN = decimal.MinValue.ToString(CultureInfo.InvariantCulture);
-    public static int CompareNumbersAsString(string a, string b)
+    internal static readonly object SharedDummyObjectValue = (object)0;
+    internal static readonly string DecimalMax = decimal.MaxValue.ToString(CultureInfo.InvariantCulture);
+    internal static readonly string DecimalMin = decimal.MinValue.ToString(CultureInfo.InvariantCulture);
+    public static int CompareNumbersAsString(ReadOnlySpan<byte> a, string b)
     {
         if (a.Length != b.Length)
         {

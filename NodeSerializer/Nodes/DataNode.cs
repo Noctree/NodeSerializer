@@ -70,10 +70,13 @@ public abstract class DataNode : IEquatable<DataNode>
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((DataNode)obj);
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj is DataNode other)
+            return Equals(other);
+        return false;
     }
 
     public string ToString(int indent)
@@ -97,12 +100,14 @@ public abstract class DataNode : IEquatable<DataNode>
 
     public static bool operator ==(DataNode? left, DataNode? right)
     {
-        return Equals(left, right);
+        if (ReferenceEquals(left, right))
+            return true;
+        return left?.Equals(right) ?? false;
     }
 
     public static bool operator !=(DataNode? left, DataNode? right)
     {
-        return !Equals(left, right);
+        return !(left == right);
     }
 
     protected static string Indent(string str, byte amount)

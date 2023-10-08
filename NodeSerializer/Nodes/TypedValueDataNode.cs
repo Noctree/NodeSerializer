@@ -15,7 +15,7 @@ public class TypedValueDataNode<T> : ValueDataNode where T : struct, IComparable
 
     public T TypedValue { get; set; }
 
-    public TypedValueDataNode(T value, Type type, string? name, DataNode? parent) : base(Utils.SHARED_DUMMY_OBJECT_VALUE, type, name, parent)
+    public TypedValueDataNode(T value, Type type, string? name, DataNode? parent) : base(Utils.SharedDummyObjectValue, type, name, parent)
     {
         TypedValue = value;
     }
@@ -27,6 +27,11 @@ public class TypedValueDataNode<T> : ValueDataNode where T : struct, IComparable
             return Comparer<T>.Default.Compare(TypedValue, otherValue.TypedValue) == 0;
         }
         return base.Equals(other);
+    }
+
+    public override DataNode Clone()
+    {
+        return new TypedValueDataNode<T>(TypedValue, TypeOf!, null, null);
     }
 
     public override string? SerializeToString()

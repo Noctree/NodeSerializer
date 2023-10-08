@@ -1,6 +1,6 @@
 ﻿namespace NodeSerializer.Nodes;
 
-public class BooleanDataNode : TypedValueDataNode<bool>
+public sealed partial class BooleanDataNode : TypedValueDataNode<bool>, IEquatable<BooleanDataNode>
 {
     private const string TRUE_STRING = "true";
     private const string FALSE_STRING = "false";
@@ -11,8 +11,22 @@ public class BooleanDataNode : TypedValueDataNode<bool>
     {
     }
 
-    protected override string ToString(byte indent)
+    public override DataNode Clone()
     {
-        return Indent($"Boolean({Name}: {ValueAsString})", indent);
+        return new BooleanDataNode(TypedValue, null, null);
+    }
+
+    public bool Equals(BooleanDataNode? other)
+    {
+        return Value == other?.Value;
+    }
+
+    public override bool Equals(DataNode? other)
+    {
+        if (other is BooleanDataNode booleanDataNode)
+        {
+            return Value == booleanDataNode.Value;
+        }
+        return base.Equals(other);
     }
 }

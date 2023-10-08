@@ -3,26 +3,51 @@ using System.Runtime.InteropServices;
 
 namespace NodeSerializer.Nodes;
 
-public class NumberValueDataNode : TypedValueDataNode<NumericUnion>
+public partial class NumberValueDataNode : TypedValueDataNode<NumericUnion>
 {
-    public NumberValueDataNode(int value, string? name, DataNode? parent) : base(value, typeof(long), name, parent)
+    internal NumberValueDataNode(byte value, string? name, DataNode? parent) : base((ulong)value, typeof(byte), name, parent)
     {
     }
     
-    public NumberValueDataNode(long value, string? name, DataNode? parent) : base(value, typeof(long), name, parent)
+    internal NumberValueDataNode(sbyte value, string? name, DataNode? parent) : base(value, typeof(sbyte), name, parent)
     {
     }
     
-    public NumberValueDataNode(ulong value, string? name, DataNode? parent) : base(value, typeof(ulong), name, parent)
+    internal NumberValueDataNode(short value, string? name, DataNode? parent) : base(value, typeof(short), name, parent)
     {
     }
     
-    public NumberValueDataNode(decimal value, string? name, DataNode? parent) : base(value, typeof(decimal), name, parent)
+    internal NumberValueDataNode(ushort value, string? name, DataNode? parent) : base((ulong)value, typeof(ushort), name, parent)
     {
     }
     
-    public NumberValueDataNode(double value, string? name, DataNode? parent) : base(value, typeof(double), name, parent)
+    internal NumberValueDataNode(int value, string? name, DataNode? parent) : base(value, typeof(int), name, parent)
     {
+    }
+    
+    internal NumberValueDataNode(long value, string? name, DataNode? parent) : base(value, typeof(long), name, parent)
+    {
+    }
+    
+    internal NumberValueDataNode(ulong value, string? name, DataNode? parent) : base(value, typeof(ulong), name, parent)
+    {
+    }
+    
+    internal NumberValueDataNode(decimal value, string? name, DataNode? parent) : base(value, typeof(decimal), name, parent)
+    {
+    }
+    
+    internal NumberValueDataNode(double value, string? name, DataNode? parent) : base(value, typeof(double), name, parent)
+    {
+    }
+
+    private NumberValueDataNode(NumericUnion value, Type type) : base(value, type, null, null)
+    {
+    }
+
+    public override DataNode Clone()
+    {
+        return new NumberValueDataNode(TypedValue, TypeOf!);
     }
 
     protected override string ToString(byte indent)
