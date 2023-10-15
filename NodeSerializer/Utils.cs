@@ -9,11 +9,6 @@ public static class Utils
     internal static readonly string DecimalMin = decimal.MinValue.ToString(CultureInfo.InvariantCulture);
     public static int CompareNumbersAsString(ReadOnlySpan<byte> a, string b)
     {
-        if (a.Length != b.Length)
-        {
-            return a.Length.CompareTo(b.Length);
-        }
-        
         if (a[0] == '-' && b[0] != '-')
         {
             return -1;
@@ -21,6 +16,11 @@ public static class Utils
         if (a[0] != '-' && b[0] == '-')
         {
             return 1;
+        }
+        
+        if (a.Length != b.Length)
+        {
+            return a.Length.CompareTo(b.Length);
         }
         
         for (var i = 0; i < a.Length; i++)
