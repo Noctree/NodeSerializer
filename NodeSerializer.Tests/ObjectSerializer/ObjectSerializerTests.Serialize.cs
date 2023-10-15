@@ -36,7 +36,7 @@ public class ObjectSerializerTests_Serialize
         // Assert
         result
             .Should()
-            .BeOfType<NumberValueDataNode>();
+            .BeOfType<NumberDataNode>();
         result.AsNumber().TypedValue.AsInt().Should().Be(input);
     }
 

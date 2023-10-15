@@ -27,9 +27,11 @@ public static class Utils
         {
             if (a[i] != b[i])
             {
-                return a[i].CompareTo(b[i]);
+                return a[i].CompareTo((byte)b[i]);
             }
         }
         return 0;
     }
+
+    public static UniqueName ToUniqueName(this string str) => new UniqueName(str);
 }

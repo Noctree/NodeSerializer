@@ -130,8 +130,8 @@ public class JsonDeserializationTestsEdgeCases
         objData["IntList"].Should().BeOfType<NullDataNode>();
         objData["StringDict"].Should().BeOfType<ArrayDataNode>();
         objData["StringDict"].AsArray().Should().ContainInConsecutiveOrder(
-            NumberValueDataNode.Create(1),
-            NumberValueDataNode.Create(2));
+            NumberDataNode.Create(1),
+            NumberDataNode.Create(2));
     }
 
     [Fact]

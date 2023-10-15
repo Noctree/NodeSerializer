@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace NodeSerializer.Reflection;
+namespace NodeSerializer.Reflection.Internal;
 
 public class UntypedAccessorCache
 {

@@ -56,7 +56,7 @@ public class JsonDeserializationTests
             .Should()
             .OnlyContain(n => validNames.Contains(n));
         var integerData = objData[nameof(SimpleJsonObject.Integer)];
-        integerData.Should().BeOfType<NumberValueDataNode>();
+        integerData.Should().BeOfType<NumberDataNode>();
         var integerDataNode = integerData.AsNumber();
         integerDataNode.TypedValue.AsInt().Should().Be(69);
         
@@ -66,7 +66,7 @@ public class JsonDeserializationTests
         booleanDataNode.TypedValue.Should().BeTrue();
         
         var decimalData = objData[nameof(SimpleJsonObject.Decimal)];
-        decimalData.Should().BeOfType<NumberValueDataNode>();
+        decimalData.Should().BeOfType<NumberDataNode>();
         var decimalDataNode = decimalData.AsNumber();
         decimalDataNode.TypedValue.AsDecimal().Should().Be(420.1337m);
         
@@ -116,7 +116,7 @@ public class JsonDeserializationTests
 
         var obj1 = objData[nameof(NestedJsonObject.ObjectA)].AsObject();
         var integerData1 = obj1[nameof(SimpleJsonObject.Integer)];
-        integerData1.Should().BeOfType<NumberValueDataNode>();
+        integerData1.Should().BeOfType<NumberDataNode>();
         integerData1.AsNumber().TypedValue.AsInt().Should().Be(69);
         
         var booleanData1 = obj1[nameof(SimpleJsonObject.Boolean)];
@@ -124,7 +124,7 @@ public class JsonDeserializationTests
         booleanData1.AsBoolean().TypedValue.Should().BeTrue();
         
         var decimalData1 = obj1[nameof(SimpleJsonObject.Decimal)];
-        decimalData1.Should().BeOfType<NumberValueDataNode>();
+        decimalData1.Should().BeOfType<NumberDataNode>();
         decimalData1.AsNumber().TypedValue.AsDecimal().Should().Be(420.1337m);
         
         var stringData1 = obj1[nameof(SimpleJsonObject.String)];
@@ -133,7 +133,7 @@ public class JsonDeserializationTests
         
         var obj2 = objData[nameof(NestedJsonObject.ObjectB)].AsObject();
         var integerData2 = obj2[nameof(SimpleJsonObject.Integer)];
-        integerData2.Should().BeOfType<NumberValueDataNode>();
+        integerData2.Should().BeOfType<NumberDataNode>();
         integerData2.AsNumber().TypedValue.AsInt().Should().Be(420);
         
         var booleanData2 = obj2[nameof(SimpleJsonObject.Boolean)];
@@ -141,7 +141,7 @@ public class JsonDeserializationTests
         booleanData2.AsBoolean().TypedValue.Should().BeFalse();
         
         var decimalData2 = obj2[nameof(SimpleJsonObject.Decimal)];
-        decimalData2.Should().BeOfType<NumberValueDataNode>();
+        decimalData2.Should().BeOfType<NumberDataNode>();
         decimalData2.AsNumber().TypedValue.AsDecimal().Should().Be(420.1337m);
         
         var stringData2 = obj2[nameof(SimpleJsonObject.String)];

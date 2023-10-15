@@ -63,7 +63,7 @@ public class JsonDataNodeSerializer : IJsonSerializer
     {
         var rawValue = reader.ValueSpan;
         if (rawValue.Length == 0)
-            return new NumberValueDataNode(0L, null, null);
+            return new NumberDataNode(0L, null, null);
         var split = rawValue.IndexOf((byte)'.');
         var requiresNegative = rawValue[0] == '-';
         if (split == -1)
@@ -71,18 +71,18 @@ public class JsonDataNodeSerializer : IJsonSerializer
             //We try to use the largest type to prevent any accidental data loss
             //Using signed longs only if the number is negative
             if (requiresNegative)
-                return new NumberValueDataNode(reader.GetInt64(), name, null);
+                return new NumberDataNode(reader.GetInt64(), name, null);
             else
-                return new NumberValueDataNode(reader.GetUInt64(), name, null);
+                return new NumberDataNode(reader.GetUInt64(), name, null);
         }
         else
         {
             //Here we use heuristics to guess the most appropriate type for decimal values
             //If the number fits in the decimal range, we use decimal, otherwise double
             if (Utils.CompareNumbersAsString(rawValue.Slice(0, split), requiresNegative ? Utils.DecimalMin : Utils.DecimalMax) <= 0)
-                return new NumberValueDataNode(reader.GetDecimal(), name, null);
+                return new NumberDataNode(reader.GetDecimal(), name, null);
             else
-                return new NumberValueDataNode(reader.GetDouble(), name, null);
+                return new NumberDataNode(reader.GetDouble(), name, null);
         }
     }
 
@@ -221,7 +221,7 @@ public class JsonDataNodeSerializer : IJsonSerializer
             case BooleanDataNode boolean:
                 SerializeBooleanNode(writer, inArray, boolean);
                 break;
-            case NumberValueDataNode number:
+            case NumberDataNode number:
                 SerializeNumberNode(writer, inArray, number);
                 break;
             case StringDataNode stringData:
@@ -294,7 +294,7 @@ public class JsonDataNodeSerializer : IJsonSerializer
             writer.WriteString(stringData.Name.EnsureNotNull(), stringData.TypedValue);
     }
 
-    private static void SerializeNumberNode(Utf8JsonWriter writer, bool inArray, NumberValueDataNode number)
+    private static void SerializeNumberNode(Utf8JsonWriter writer, bool inArray, NumberDataNode number)
     {
         var value = number.SerializeToString();
         if (value is null)

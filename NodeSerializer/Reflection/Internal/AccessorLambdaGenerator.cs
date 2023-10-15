@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 
-namespace NodeSerializer.Reflection;
+namespace NodeSerializer.Reflection.Internal;
 
 public static class AccessorLambdaGenerator
 {

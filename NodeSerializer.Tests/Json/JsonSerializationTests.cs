@@ -12,8 +12,8 @@ public class JsonSerializationTests
     public void SimpleUntypedObject_Serialization_ShouldSucceed()
     {
         var obj = ObjectDataNode.CreateUntypedEmpty();
-        var intProp = NumberValueDataNode.Create(32);
-        var doubleProp = NumberValueDataNode.Create(420.69);
+        var intProp = NumberDataNode.Create(32);
+        var doubleProp = NumberDataNode.Create(420.69);
         var boolProp = BooleanDataNode.Create(true);
         var stringProp = StringDataNode.Create("Hello");
         var nullProp = NullDataNode.Create();
@@ -32,8 +32,8 @@ public class JsonSerializationTests
     public void SimpleUntypedArray_Serialization_ShouldSucceed()
     {
         var array = ArrayDataNode.CreateUntypedEmpty();
-        var intProp = NumberValueDataNode.Create(32);
-        var doubleProp = NumberValueDataNode.Create(420.69);
+        var intProp = NumberDataNode.Create(32);
+        var doubleProp = NumberDataNode.Create(420.69);
         var boolProp = BooleanDataNode.Create(true);
         var stringProp = StringDataNode.Create("Hello");
         var nullProp = NullDataNode.Create();
@@ -54,10 +54,10 @@ public class JsonSerializationTests
             var obj = ObjectDataNode.CreateUntypedEmpty();
             var nestedObj = ObjectDataNode.CreateUntypedEmpty();
 
-            nestedObj.Add("NestedNumber", NumberValueDataNode.Create(42));
+            nestedObj.Add("NestedNumber", NumberDataNode.Create(42));
             nestedObj.Add("NestedBoolean", BooleanDataNode.Create(false));
             
-            obj.Add("Number", NumberValueDataNode.Create(32));
+            obj.Add("Number", NumberDataNode.Create(32));
             obj.Add("NestedObject", nestedObj);
 
             var json = _serializer.Serialize(obj);
@@ -70,10 +70,10 @@ public class JsonSerializationTests
             var array = ArrayDataNode.CreateUntypedEmpty();
             var nestedArray = ArrayDataNode.CreateUntypedEmpty();
 
-            nestedArray.Add(NumberValueDataNode.Create(42));
+            nestedArray.Add(NumberDataNode.Create(42));
             nestedArray.Add(BooleanDataNode.Create(false));
 
-            array.Add(NumberValueDataNode.Create(32));
+            array.Add(NumberDataNode.Create(32));
             array.Add(nestedArray);
 
             var json = _serializer.Serialize(array);

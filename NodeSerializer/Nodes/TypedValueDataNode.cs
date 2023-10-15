@@ -7,9 +7,9 @@ public class TypedValueDataNode<T> : ValueDataNode where T : struct, IComparable
 {
     public override object Value
     {
-        [SuppressMessage("Sonar Consistency Issue", "S4275", Justification = "Base Object value is ignored for performance reasons")]
+        [SuppressMessage("Sonar Consistency Issue", "S4275", Justification = "Base Object value is ignored to avoid needless boxing")]
         get => TypedValue;
-        [SuppressMessage("Sonar Consistency Issue", "S4275", Justification = "Base Object value is ignored for performance reasons")]
+        [SuppressMessage("Sonar Consistency Issue", "S4275", Justification = "Base Object value is ignored to avoid needless boxing")]
         set => TypedValue = (T)value;
     }
 

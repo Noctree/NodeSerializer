@@ -3,51 +3,51 @@ using System.Runtime.InteropServices;
 
 namespace NodeSerializer.Nodes;
 
-public partial class NumberValueDataNode : TypedValueDataNode<NumericUnion>
+public partial class NumberDataNode : TypedValueDataNode<NumericUnion>
 {
-    internal NumberValueDataNode(byte value, string? name, DataNode? parent) : base((ulong)value, typeof(byte), name, parent)
+    internal NumberDataNode(byte value, string? name, DataNode? parent) : base((ulong)value, typeof(byte), name, parent)
     {
     }
     
-    internal NumberValueDataNode(sbyte value, string? name, DataNode? parent) : base(value, typeof(sbyte), name, parent)
+    internal NumberDataNode(sbyte value, string? name, DataNode? parent) : base(value, typeof(sbyte), name, parent)
     {
     }
     
-    internal NumberValueDataNode(short value, string? name, DataNode? parent) : base(value, typeof(short), name, parent)
+    internal NumberDataNode(short value, string? name, DataNode? parent) : base(value, typeof(short), name, parent)
     {
     }
     
-    internal NumberValueDataNode(ushort value, string? name, DataNode? parent) : base((ulong)value, typeof(ushort), name, parent)
+    internal NumberDataNode(ushort value, string? name, DataNode? parent) : base((ulong)value, typeof(ushort), name, parent)
     {
     }
     
-    internal NumberValueDataNode(int value, string? name, DataNode? parent) : base(value, typeof(int), name, parent)
+    internal NumberDataNode(int value, string? name, DataNode? parent) : base(value, typeof(int), name, parent)
     {
     }
     
-    internal NumberValueDataNode(long value, string? name, DataNode? parent) : base(value, typeof(long), name, parent)
+    internal NumberDataNode(long value, string? name, DataNode? parent) : base(value, typeof(long), name, parent)
     {
     }
     
-    internal NumberValueDataNode(ulong value, string? name, DataNode? parent) : base(value, typeof(ulong), name, parent)
+    internal NumberDataNode(ulong value, string? name, DataNode? parent) : base(value, typeof(ulong), name, parent)
     {
     }
     
-    internal NumberValueDataNode(decimal value, string? name, DataNode? parent) : base(value, typeof(decimal), name, parent)
+    internal NumberDataNode(decimal value, string? name, DataNode? parent) : base(value, typeof(decimal), name, parent)
     {
     }
     
-    internal NumberValueDataNode(double value, string? name, DataNode? parent) : base(value, typeof(double), name, parent)
+    internal NumberDataNode(double value, string? name, DataNode? parent) : base(value, typeof(double), name, parent)
     {
     }
 
-    private NumberValueDataNode(NumericUnion value, Type type) : base(value, type, null, null)
+    private NumberDataNode(NumericUnion value, Type type) : base(value, type, null, null)
     {
     }
 
     public override DataNode Clone()
     {
-        return new NumberValueDataNode(TypedValue, TypeOf!);
+        return new NumberDataNode(TypedValue, TypeOf!);
     }
 
     protected override string ToString(byte indent)
@@ -146,7 +146,7 @@ public struct NumericUnion : IFormattable, IComparable<NumericUnion>
         NumberRange.NegativeInteger => LongValue.ToString(format, formatProvider),
         NumberRange.SmallDecimal => DecimalValue.ToString(format, formatProvider),
         NumberRange.BigDecimal => DoubleValue.ToString(format, formatProvider),
-        _ => nameof(NumberValueDataNode)
+        _ => nameof(NumberDataNode)
     };
     
     public int CompareTo(NumericUnion other)

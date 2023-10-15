@@ -4,6 +4,7 @@ using System.Reflection;
 using NodeSerializer.Extensions;
 using NodeSerializer.Nodes;
 using NodeSerializer.Reflection;
+using NodeSerializer.Reflection.Internal;
 
 namespace NodeSerializer.Serialization;
 
@@ -187,17 +188,17 @@ public static class ObjectSerializer
         {
             bool b => BooleanDataNode.Create(b),
             string s => StringDataNode.Create(s),
-            decimal d => NumberValueDataNode.Create(d),
-            byte b => NumberValueDataNode.Create(b),
-            short s => NumberValueDataNode.Create(s),
-            int i => NumberValueDataNode.Create(i),
-            long l => NumberValueDataNode.Create(l),
-            float f => NumberValueDataNode.Create(f),
-            double d => NumberValueDataNode.Create(d),
-            sbyte b => NumberValueDataNode.Create(b),
-            ushort s => NumberValueDataNode.Create(s),
-            uint i => NumberValueDataNode.Create(i),
-            ulong l => NumberValueDataNode.Create(l),
+            decimal d => NumberDataNode.Create(d),
+            byte b => NumberDataNode.Create(b),
+            short s => NumberDataNode.Create(s),
+            int i => NumberDataNode.Create(i),
+            long l => NumberDataNode.Create(l),
+            float f => NumberDataNode.Create(f),
+            double d => NumberDataNode.Create(d),
+            sbyte b => NumberDataNode.Create(b),
+            ushort s => NumberDataNode.Create(s),
+            uint i => NumberDataNode.Create(i),
+            ulong l => NumberDataNode.Create(l),
             _ => throw new NotSupportedException("Only primitive types are supported")
         };
 }
